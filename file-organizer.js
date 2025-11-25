@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const sourceDir = path.join(__dirname, "output", "messy-files");
-const organizedDir = path.join(__dirname, "output","organized");
+const organizedDir = path.join(__dirname, "output", "organized");
 
 const categories = {
   images: [".jpg", ".jpeg", ".png", ".svg"],
@@ -53,4 +53,15 @@ function initializeDirectories() {
     }
   });
 }
-initializeDirectories();
+
+function getCategory(filename) {
+  const ext = path.extname(filename).toLowerCase();
+  //  [images: [".jpg", ".jpeg", ".png", ".svg"],]
+  for (const [category, extensions] of Object.entries(categories)) {
+    if (extensions.includes(ext)) {
+      return category;
+    }
+  }
+  return others
+}
+
