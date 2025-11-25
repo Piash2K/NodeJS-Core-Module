@@ -62,6 +62,70 @@ function getCategory(filename) {
       return category;
     }
   }
-  return others
+  return "others";
 }
 
+function organizeFiles() {
+  console.log("file organizer \n");
+  console.log("source :", sourceDir);
+  console.log("Destination :", organizedDir);
+  console.log("\n+" - "".repeat(50) + "\n");
+
+  const files = fs.readdirSync(sourceDir);
+
+  if (files.length === 0) {
+    console.log("No files to work on!!");
+    return;
+  }
+  console.log(`Found ${files.length} files to organize \n`);
+  const stats = {
+    total: 0,
+    byCategory: {},
+  };
+  files.forEach((file) => {
+    const sourcePath = path.join(sourceDir, file);
+    const stat = fs.statSync(sourcePath);
+    if (stat.isDirectory()) {
+      return;
+    }
+    const category = getCategory(file);
+    const destDir = path.join(organizedDir, category);
+    const destPath = path.join(destDir, file);
+
+    fs.copyFileSync(sourcePath, destPath);
+
+    stats.total++;
+    stats.byCategory[category] = (stats.byCategory[category] || 0) + 1;
+
+    console.log(`${file}`);
+    console.log(`${category}`);
+    console.log(`${stat.size}`);
+  });
+}
+
+function showHelp() {
+  console.log(`
+    file organizer - usage
+    commands: 
+    init - create files
+    organize - organize files into categories
+
+    example:
+    node file-organizer init
+    node file-organizer organize
+    `);
+}
+
+const command = process.argv[2];
+
+switch (command) {
+  case "init":
+    initializeDirectories();
+    break;
+  case "organize":
+    organizeFiles();
+    break;
+  default:
+    showHelp();
+    break;
+}
